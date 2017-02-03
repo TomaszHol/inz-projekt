@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Handling Form Submission</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1>Menu</h1>
+<p>Lista dostępnych podatności oraz obron do przetestowania</p>
+<ul>
+    <li>CSRF
+        <ul>
+            <li><p><a th:href="@{/csrf/}">Podatność CSRF</a></p></li>
+            <li><p><a th:href="@{/csrf-defense/}">Obrona przed CSRF</a></p></li>
+        </ul>
+    </li>
+    <li>XSS
+        <ul>
+            <li><p><a th:href="@{/xss/}">Podatność XSS</a></p></li>
+            <li><p><a th:href="@{/xss-esapi/}">Obrona przed XSS z wykorzystaniem ESAPI</a></p></li>
+            <li><p><a th:href="@{/xss-csp/}">Obrona przed XSS z wykorzystaniem CSP 2.0</a></p></li>
+        </ul>
+    </li>
+    <li>Injection
+        <ul>
+            <li><p><a th:href="@{/injection/}">Podatność SQL Injection</a></p></li>
+            <li><p><a th:href="@{/injection-defense/}">Obrona przed SQL Injection</a></p></li>
+        </ul>
+    </li>
+</ul>
+
+</body>
+</html>
